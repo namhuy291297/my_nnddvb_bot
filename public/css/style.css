@@ -1,0 +1,16 @@
+.wrapper{
+    position: relative;
+    height: 99.2vh;
+    padding: 0;
+}
+
+.wrapper iframe {
+    width: 100%;
+    height: 100%;
+}
+
+@media screen and (max-width: 1024px) {
+    .wrapper{
+        padding: 0;
+    }
+}

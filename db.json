@@ -1,0 +1,92 @@
+{
+    "users" : [
+        {
+            "user_id": "huynguyen",
+            "name": "Nguyễn Vương Nam Huy",
+            "profile": "is my boss, he is a member of R&D"
+        },
+        {
+            "user_id": "huythach",
+            "name": "Thạch Thái Huy",
+            "profile": "is a member of R&D"
+        },
+        {
+            "user_id": "duanla",
+            "name": "La Văn Duẩn",
+            "profile": "is a member of EDI"
+        },
+        {
+            "user_id": "phucche",
+            "name": "Chế Văn Phúc",
+            "profile": "is a member of WUT"
+        },
+        {
+            "user_id": "duytran",
+            "name": "Trần Anh Duy",
+            "profile": "is a member of OPUS"
+        },
+        {
+            "user_id": "linhdinh",
+            "name": "Đinh Bộ Lĩnh",
+            "profile": "is a member of OPUS"
+        },
+        {
+            "user_id": "quanluong",
+            "name": "Lương Minh Quân",
+            "profile": "is a member of OPUS"
+        },
+        {
+            "user_id": "nhale",
+            "name": "Lê Thanh Nhã",
+            "profile": "is a member of WUT"
+        },
+        {
+            "user_id": "tuanpham",
+            "name": "Phạm Hữu Tuấn",
+            "profile": "is a member of OPUS"
+        },
+        {
+            "user_id": "phuocle",
+            "name": "Lê Minh Phước",
+            "profile": "is a member of BluePrint"
+        },
+        {
+            "user_id": "quanho",
+            "name": "Hồ Đắc Minh Quân",
+            "profile": "is a student of HSU"
+        },
+        {
+            "user_id": "binhnguyen",
+            "name": "Nguyễn Tiến Bình",
+            "profile": "is a overseas Vietnamese"
+        },
+        {
+            "user_id": "kynguyen",
+            "name": "Nguyễn Nhật Kỳ",
+            "profile": "is a student of HSU"
+        },
+        {
+            "user_id": "vinhcao",
+            "name": "Cao Quang Vinh",
+            "profile": "is a employee of We Jelly"
+        }
+    ],
+    "books" : [
+        {
+            "type": "adventure",
+            "price": "12"
+        },
+        {
+            "type": "drama",
+            "price": "20"
+        },
+        {
+            "type": "mistery",
+            "price": "15"
+        },
+        {
+            "type": "poetry",
+            "price": "30"
+        }
+    ]
+}
