@@ -2,9 +2,11 @@
 
 const { WebhookClient, Card, Suggestion } = require('dialogflow-fulfillment');
 process.env.DEBUG = 'dialogflow:debug';
+const moment = require('moment');
 const db_user = require('./db.json').users;
 const db_book = require('./db.json').books;
 var all_kind_of_book = '';
+var profileName = '';
 
 class Webhook {
     static async handleRequest(req, res) {
@@ -14,11 +16,12 @@ class Webhook {
 
             let intentMap = new Map();
             intentMap.set('greeting', Webhook.greeting);
-            intentMap.set('error', Webhook.fallback);
+            intentMap.set('error', Webhook.error);
             intentMap.set('meeting', Webhook.meeting);
             intentMap.set('book', Webhook.book);
             intentMap.set('book-price', Webhook.bookPrice);
             intentMap.set('profile', Webhook.profile);
+            intentMap.set('profile-more', Webhook.profileMore);
             intentMap.set('thank', Webhook.thank);
             agent.handleRequest(intentMap);
 
@@ -34,14 +37,18 @@ class Webhook {
         // agent.add(`Hello to my agent !`);
     }
 
-    static async fallback(agent) {
+    static async error(agent) {
         // agent.add(`I didn't understand. Can you try again ?`);
     }
 
     static async meeting(agent) {
-        // console.log(agent.parameters['date']);
-        // console.log(agent.parameters['time']);
-        // console.log(agent.parameters['duration']);
+        // console.log(agent.parameters);
+        if (agent.parameters['date'] !== '' && agent.parameters['time'] !== '' && agent.parameters['duration'] !== '') {
+            agent.add(`
+                Your room was successfully booked on ${moment(agent.parameters['date']).format('YYYY-MM-DD')}
+                at ${moment(agent.parameters['time']).format('HH:mm')} about ${agent.parameters['duration']}
+            `);
+        }
     }
 
     static async book(agent) {
@@ -51,7 +58,7 @@ class Webhook {
     static async bookPrice(agent) {
         var book;
         var kind_of_book = agent.parameters['book'];
-        
+
         if (kind_of_book.length > 0 && kind_of_book.length < 2) {
             db_book.map((b, index) => {
                 if (b.type == agent.parameters['book']) {
@@ -62,20 +69,20 @@ class Webhook {
         }
         else if (kind_of_book.length > 1) {
             var books = [];
-                var message = [];
-                db_book.map((b, index) => {
-                    kind_of_book.map(kob => {
-                        if (b.type == kob) {
-                            books.push(b);
-                        }
-                    })
-                });
-                books.map(bs => {
-                    message += `, ${bs.type} book is ${bs.price}$`
-                });
-                agent.add(message.substring(2));
+            var message = [];
+            db_book.map((b, index) => {
+                kind_of_book.map(kob => {
+                    if (b.type == kob) {
+                        books.push(b);
+                    }
+                })
+            });
+            books.map(bs => {
+                message += `, ${bs.type} book is ${bs.price}$`
+            });
+            agent.add(message.substring(2));
         }
-        else{
+        else {
             if (all_kind_of_book.length > 0 && all_kind_of_book.length < 2) {
                 db_book.map((b, index) => {
                     if (b.type == all_kind_of_book) {
@@ -111,6 +118,7 @@ class Webhook {
 
         var user;
         var param = agent.parameters['name'];
+        profileName = param;
         if (param == "you") {
             agent.add(`I am a bot of CLV, my owner is Huy Nguyen. I was created to answer everyone's questions.`);
         }
@@ -121,6 +129,35 @@ class Webhook {
                 }
             });
             agent.add(`${user.name} ${user.profile}`);
+        }
+
+        // agent.add(new Card({
+        //     title: `Title: this is a card title`,
+        //     imageUrl: 'https://developers.google.com/actions/images/badges/XPM_BADGING_GoogleAssistant_VER.png',
+        //     text: `This is the body text of a card.  You can even use line\n  breaks and emoji! 💁`,
+        //     buttonText: 'This is a button',
+        //     buttonUrl: 'https://assistant.google.com/'
+        // }));
+    }
+
+    static async profileMore(agent){
+        var user;
+        var param = agent.parameters['name'];
+        if(param !== ''){
+            db_user.map((u, index) => {
+                if (u.user_id == param) {
+                    user = u;
+                }
+            });
+            agent.add(`${user.name} ${user.profileMore}`);
+        }
+        else{
+            db_user.map((u, index) => {
+                if (u.user_id == profileName) {
+                    user = u;
+                }
+            });
+            agent.add(`${user.name} ${user.profileMore}`);
         }
     }
 
