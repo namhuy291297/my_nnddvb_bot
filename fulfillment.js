@@ -149,7 +149,6 @@ class Webhook {
                     user = u;
                 }
             });
-            agent.add(`${user.name} ${user.profileMore}`);
         }
         else{
             db_user.map((u, index) => {
@@ -157,8 +156,9 @@ class Webhook {
                     user = u;
                 }
             });
-            agent.add(`${user.name} ${user.profileMore}`);
         }
+        // source: https://stackoverflow.com/questions/4550505/getting-a-random-value-from-a-javascript-array
+        agent.add(`${user.name} ${user.profileMore[Math.floor(Math.random() * user.profileMore.length)]}`);
     }
 
     // // Uncomment and edit to make your own intent handler
