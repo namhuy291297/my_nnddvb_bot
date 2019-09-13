@@ -1,12 +1,15 @@
 'use strict';
 
 const { WebhookClient, Card, Suggestion } = require('dialogflow-fulfillment');
+const {BasicCard, Button, BrowseCarousel, BrowseCarouselItem, List, Suggestions} = require('actions-on-google');
 process.env.DEBUG = 'dialogflow:debug';
 const moment = require('moment');
 const db_user = require('./db.json').users;
 const db_book = require('./db.json').books;
+
 var all_kind_of_book = '';
 var profileName = '';
+var meeting;
 
 class Webhook {
     static async handleRequest(req, res) {
@@ -18,6 +21,8 @@ class Webhook {
             intentMap.set('greeting', Webhook.greeting);
             intentMap.set('error', Webhook.error);
             intentMap.set('meeting', Webhook.meeting);
+            intentMap.set('meeting-confirm', Webhook.meetingConfirm);
+            intentMap.set('meeting-cancel', Webhook.meetingCancel);
             intentMap.set('book', Webhook.book);
             intentMap.set('book-price', Webhook.bookPrice);
             intentMap.set('profile', Webhook.profile);
@@ -28,7 +33,8 @@ class Webhook {
             //   const agent = new WebhookClient({ request, response });
             //   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
             //   console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
-        } catch (error) {
+        } 
+        catch (error) {
 
         }
     }
@@ -44,10 +50,28 @@ class Webhook {
     static async meeting(agent) {
         // console.log(agent.parameters);
         if (agent.parameters['date'] !== '' && agent.parameters['time'] !== '' && agent.parameters['duration'] !== '') {
-            agent.add(`
-                Your room was successfully booked on ${moment(agent.parameters['date']).format('YYYY-MM-DD')}
-                at ${moment(agent.parameters['time']).format('HH:mm')} about ${agent.parameters['duration']}
-            `);
+            meeting = agent.parameters;
+            agent.add(`Do you confirm the booking on ${moment(agent.parameters['date']).format('YYYY-MM-DD')} at ${moment(agent.parameters['time']).format('HH:mm')} for ${agent.parameters['duration']} ?`);
+        }
+    }
+
+    static async meetingConfirm(agent) {
+        if (meeting !== '') {
+            agent.add(`The meeting room was created successfully`);
+            meeting = '';
+        }
+        else{
+            agent.add(`Sorry, i don't understand. Try something else`);
+        }
+    }
+
+    static async meetingCancel(agent) {
+        if (meeting !== '') {
+            agent.add(`Your booking was cancelled`);
+            meeting = '';
+        }
+        else{
+            agent.add(`Sorry, i don't understand. Try something else`);
         }
     }
 
@@ -61,9 +85,7 @@ class Webhook {
 
         if (kind_of_book.length > 0 && kind_of_book.length < 2) {
             db_book.map((b, index) => {
-                if (b.type == agent.parameters['book']) {
-                    book = b;
-                }
+                if (b.type == agent.parameters['book']) book = b;
             });
             agent.add(`${book.price} $`);
         }
@@ -72,9 +94,7 @@ class Webhook {
             var message = [];
             db_book.map((b, index) => {
                 kind_of_book.map(kob => {
-                    if (b.type == kob) {
-                        books.push(b);
-                    }
+                    if (b.type == kob) books.push(b);
                 })
             });
             books.map(bs => {
@@ -85,9 +105,7 @@ class Webhook {
         else {
             if (all_kind_of_book.length > 0 && all_kind_of_book.length < 2) {
                 db_book.map((b, index) => {
-                    if (b.type == all_kind_of_book) {
-                        book = b;
-                    }
+                    if (b.type == all_kind_of_book) book = b;
                 });
                 agent.add(`${book.price} $`);
             }
@@ -96,9 +114,7 @@ class Webhook {
                 var message = [];
                 db_book.map((b, index) => {
                     all_kind_of_book.map(kob => {
-                        if (b.type == kob) {
-                            books.push(b);
-                        }
+                        if (b.type == kob) books.push(b); 
                     })
                 });
                 books.map(bs => {
@@ -124,9 +140,7 @@ class Webhook {
         }
         else {
             db_user.map((u, index) => {
-                if (u.user_id == param) {
-                    user = u;
-                }
+                if (u.user_id == param) user = u;
             });
             agent.add(`${user.name} ${user.profile}`);
         }
@@ -145,16 +159,12 @@ class Webhook {
         var param = agent.parameters['name'];
         if(param !== ''){
             db_user.map((u, index) => {
-                if (u.user_id == param) {
-                    user = u;
-                }
+                if (u.user_id == param) user = u;
             });
         }
         else{
             db_user.map((u, index) => {
-                if (u.user_id == profileName) {
-                    user = u;
-                }
+                if (u.user_id == profileName) user = u;
             });
         }
         // source: https://stackoverflow.com/questions/4550505/getting-a-random-value-from-a-javascript-array
